@@ -10,4 +10,5 @@ public interface DetalleRepository extends JpaRepository<DetallePedidoModel, Lon
     @Query("Select SUM(d.cantidad) from DetallePedidoModel d WHERE d.producto.id = :producto.id")
     Long totalVendidoProducto(@Param("productoId") Long productoId);
     
+    
 }
