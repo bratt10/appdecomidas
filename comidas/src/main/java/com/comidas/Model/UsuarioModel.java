@@ -1,5 +1,7 @@
 package com.comidas.Model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,6 +27,6 @@ public class UsuarioModel {
         dueño,
         cliente
     } 
-
-        
+    private String resetToken; 
+    private LocalDateTime resetTokenExp;    
 }

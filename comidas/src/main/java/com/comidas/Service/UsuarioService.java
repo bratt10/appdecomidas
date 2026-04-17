@@ -1,5 +1,8 @@
 package com.comidas.Service;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,40 @@ public class UsuarioService {
     }
     public void eliminUsuarioModel(Long id){
         usuariorepo.deleteById(id);
+    }
+    public void generarToken(String email) {
+        Optional<UsuarioModel> usuarioOpt = usuariorepo.findByEmail(email);
+
+        if (!usuarioOpt.isPresent()) {
+            return;
+        }
+
+        UsuarioModel usuario = usuarioOpt.get();
+
+        String token = UUID.randomUUID().toString();
+
+        usuario.setResetToken(token);
+        usuario.setResetTokenExp(LocalDateTime.now().plusMinutes(15));
+
+        usuariorepo.save(usuario);
+    }
+
+    public void resetPassword(String token, String nuevaPassword) {
+        UsuarioModel usuario = usuariorepo.FindByResetToken(token);
+
+        if (usuario == null) {
+            throw new IllegalArgumentException("Token inválido");
+        }
+
+        if (usuario.getResetTokenExp().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Token expirado");
+        }
+
+        usuario.setContraseña(passwordEncoder.encode(nuevaPassword));
+        usuario.setResetToken(null);
+        usuario.setResetTokenExp(null);
+
+        usuariorepo.save(usuario);
     }
 }
 
